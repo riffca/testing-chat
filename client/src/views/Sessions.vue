@@ -1,8 +1,21 @@
 <template>
 
 	<div class="conversations">
-		<div class="session" :class="{active: item.online }" v-for="(item, index) in conversations" :key="index"  @click="openConversation(id)">
-			{{ item.firstName ? item.firstName + ' ' + item.lastName : item.username }}
+
+    <div class="filter">
+
+      <input type="filterName" v-model="filterName">
+
+      <select v-model="selectActive">
+        <option>all</option>
+        <option>active</option>
+        <option>offline</option>
+      </select>
+
+    </div>
+
+		<div class="session" :class="{active: user.online }" v-for="(user, index) in filteredConversations" :key="index"  @click="openConversation(user)">
+			{{ user.firstName ? user.firstName + ' ' + user.lastName : user.username }}
 		</div>
 	</div>
 
@@ -10,36 +23,68 @@
 
 <script>
 
-
+import { mapState } from 'vuex'
 
 export default {
 	data () {
 		return {
-			conversations: []
+			filteredConversations: [],
+      selectActive: 'all',
+      filterName: []
 		}
 	},
+  created(){
+    this.changeList()
+  },
+  watch:{
+    filterName(val){
 
-	created(){
+      this.filter(item=>{
+        let name = item.username + item.firstName + item.lastName
+        return name.includes(val)
 
-		this.$request('get','users').then(data=>{
-			data.users.forEach((user)=>{
-				user.online = data.online[user.uid]
-			});
-			this.conversations =  data.users
-		})
+      })
 
+    },    
+    selectActive(){
+      this.changeList()
+    },
+    conversations(){
+      this.changeList()
+    }
+  },
+  computed: {
+    ...mapState(['conversations'])
+  },  
 
-		this.$ioOn('cennectedUsers',(data)=>{
-
-			this.conversations.forEach((user)=>{
-				user.online = data[user.uid]
-			});
-		})
-
-	},
 	methods: {
-		openConversation(id){
-			this.$router.push({name: 'chat', query: { id }})
+
+    changeList(){
+      if(this.selectActive === 'active') {
+        this.filter(item=>{
+          return item.active
+        })
+      }     
+
+      if(this.selectActive === 'offline') {
+        this.filter(item=>{
+          return !item.active
+        })
+      }     
+
+      if(this.selectActive === 'all') {
+
+        this.filter(item=>item)
+      }
+    },
+
+    filter(cb){
+
+      this.filteredConversations = this.conversations.filter(cb)
+    },
+		openConversation(user){
+			this.$router.push({name: 'chat', query: { id: user.id }})
+      this.$store.commit('set-customer', user)
 		}
 	}
 }

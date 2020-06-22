@@ -1,4 +1,4 @@
-<template>
+ <template>
 	<div id="app">
 		<div id="nav">
 			<router-link to="/auth">Auth</router-link> |
@@ -13,11 +13,29 @@
 <script>
 export default {
 
-	mounted(){
+	beforeCreated(){
 
-		// let req = {
-		// 	token: localStorage.getItem('_token')
-		// }
+    this.$request('get','users').then(data=>{
+      data.users.forEach((user)=>{
+        user.online = data.online[user.uid]
+      });
+      this.$store.commit('set-conversations', data.users)
+      let admin = data.users.find(item=>item.admin && item.online)
+    })
+
+    this.$ioOn('connectedUsers',(data)=>{
+      let conversations = this.$store.conversations.slice()
+      conversations.forEach((user)=>{
+        user.online = data[user.uid]
+      });
+      this.$store.commit('set-conversations', conversations)
+    })
+
+		let req = {
+			token: localStorage.getItem('_token')
+		}
+
+    this.$request('post','credentials', { token })
 
 		// socket.emit('login',req)
 	}

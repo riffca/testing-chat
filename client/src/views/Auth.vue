@@ -27,13 +27,13 @@
 				<input id='lastName' type="text" v-model="lastName">			
 			</div>			
 
-			<div class="form-wrapper checkbox">
+			<div class="form-wrapper checkbox" v-if="isSignup">
 				<label for="lastName">admin:</label>
 				<input id='lastName' type="checkbox" v-model="isAdmin">			
 			</div>
 
 
-							<div class="button blue" @click="action">Отправить</div>
+			<div class="button blue" @click="authAction">Отправить</div>
 
 		</div>
 
@@ -67,40 +67,37 @@ export default {
 
 	methods: {
 
-		action(){
-
-			if(this.isSignup) {
-				this.register()
-			} else {
-				this.login()
-			}
-		},
-		login(){
-			let req = {
-				username: this.username,
-				password: this.password,
-				admin: this.isAdmin
-			}
-			this.$ioEmit('login',req)
-
-		},
-		register(){
+		authAction(){
 
 			let req = {
-				username: this.username,
-				password: this.password,
-				lastName: this.lastName,
-				firstName: this.firstName,
-				admin: this.isAdmin
+        username: this.username,
+				password: this.password
+      }
+
+      if(this.isSignup) {
+        req = {
+          ...req, 
+  				lastName: this.lastName,
+  				firstName: this.firstName,
+  				admin: this.isAdmin
+        }
 			}
 
-			this.$request('post', 'register', req).then(data=>{
+      let action = this.isSignup ? 'register' : 'login'
+
+			this.$request('post', action, req).then(data=>{
 
 				if(data.token) {
 					localStorage.setItem("_token",data.token)
 					localStorage.setItem("user",JSON.stringify(data.user))
 					this.$store.commit('set-auth', data.user)
 				}
+
+        if(!data.user.admin) {
+          this.$router.push('/chat')
+        } else {
+          this.$router.push('/sessions')
+        }
 
 			}).catch(err=>{
 				console.log(err)

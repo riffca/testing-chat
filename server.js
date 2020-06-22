@@ -15,6 +15,8 @@ let clientPath = (location)=>{
 app.use(express.static(clientPath()));
 app.use(cors())
 app.use(express.json());
+app.use(require('connect-history-api-fallback')()) 
+
 
 const sequelize = new Sequelize('postgres://gxyfblsv:ZSoIrttKdzkmQbpAfUGEjOGOmIryw67G@kandula.db.elephantsql.com:5432/gxyfblsv')
 
@@ -74,10 +76,20 @@ function generateToken(model) {
 	})
 }
 
+function handleError(error, res){
+  if(error.original) {
+    res.send({ 'error': error.original.detail})
+    console.error('error !',error.original.detail)
+    
+  } else {
+    res.send({ error})
+    console.error('error !',error)
+  }
+}
+
 
 app.post('/register', async (req, res) => {
 	try {
-
 		const newUser = new User(req.body)
 		await newUser.save()
 		let token = generateToken(newUser)
@@ -85,44 +97,50 @@ app.post('/register', async (req, res) => {
 	
 	} catch (error) {
 
-		if( error.original) {
-			res.send({ 'error': error.original.detail})
-			console.error('error !',error.original.detail)
-			
-		} else {
-			res.send({ error})
-			console.error('error !',error)
-		}
+     handleError(error,res)
 	}
 })
 
 
 app.post('/login', async (req, res) => {
-		const { username, password } = req.body
-		try {
-			const user = await User.findAll({
-				where: {
-					username,
-					password
-				}
-			})
 
-			if(user) {
-				let token = generateToken(user)
-				res.json({ 'user': newUser, token }) 
-			} else {
-				res.json({ 'error': 'login error' }) 
-			}
-		} catch (error) {
-			if( error.original) {
-				res.send({ 'error': error.original.detail})
-				console.error('error !',error.original.detail)
-				
-			} else {
-				res.send({ error})
-				console.error('error !',error)
-			}
-		}
+    const { username, password } = req.body
+
+    try {
+      const users = await User.findAll({
+        where: {
+          username,
+          password
+        }
+      })
+      if(users.length) {
+        let user = users[0]
+        let token = generateToken(user)
+        res.json({ 'user': user, token }) 
+      } else {
+        res.json({ 'error': 'login error' }) 
+      }
+
+    } catch (error) {
+      handleError(error,res)
+    }
+
+})
+
+
+app.post('/credentials', async (req, res) => {
+
+	const { token } = req.body
+
+  try {
+    let data = await tokenService.verifyToken(token)
+    res.send(data)
+  } catch(e) {
+    res.send({error: 'bad token'})
+  }
+
+
+
 })
 
 
@@ -135,11 +153,7 @@ app.get('/users', async (req, res) => {
 	}
 })
 
-app.get('/test',(req,response)=>{
-	response.send("<h1>Hello</h1>")
-})
 
-app.use(require('connect-history-api-fallback')()) 
 
 http.listen(3000, () => {
 	console.log('Listening on port *: 3000');

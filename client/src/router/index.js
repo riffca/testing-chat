@@ -35,7 +35,16 @@ const router = new VueRouter({
 
 router.beforeEach((to,from,next)=>{
 
-	next()
+
+  if(to.name !== 'auth') {
+    if(!store.state.username) {
+      next('/auth')
+    }
+  } else {
+	  next()
+    
+  }
+
 
 })
 
