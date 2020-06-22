@@ -1,6 +1,7 @@
 
 <template>
 	<div id="chat">
+
 		<div class="wrapper">
 			<div class="info">
 				<p v-for="(user, index) in info" :key="index">
@@ -11,13 +12,13 @@
 
 			<div class="header">
 				<h4>
-					<span>{{ chatMembers[0] ? chatMembers[0].username : '' }}</span> 
-						vs 
-					<span>{{ chatMembers[1] ? chatMembers[1].username : '' }}</span>  
+					<span>Conversation with </span>
+					<span>{{ chatMembers[1] ? chatMembers[1].username : '' }}</span> 
 				</h4>
 			</div>
 
 			<h2>{{username}}</h2>
+
 			<div class="body">
 				<ul class="messages">
 					<small v-if="typing" class="text-white">{{typing}} is typing</small>
@@ -44,6 +45,7 @@
 				</div>
 			</div>
 		</div>
+
 	</div>
 
 </template>
@@ -86,7 +88,7 @@ export default {
 		});
 
 		this.$ioOn('typing', (data) => {
-			let typer = this.chatMembers.find(item=>item.uid == data.address)
+			let typer = this.chatMembers.find(item=>item.uid != data.address)
 			this.typing = typer.username +  ' is typing';
 		});
 
@@ -146,10 +148,10 @@ export default {
 
 		typeAction(value){
 			this.getAddresses.forEach(user=>{
-
-				value ? this.$ioEmit('typing', { address: user.uid  } ) 
-					: this.$ioEmit('stopTyping',  { address: user.uid  } )
-				
+				if(user.id !== this.user.id) {
+					value ? this.$ioEmit('typing', { address: user.uid  } ) 
+						: this.$ioEmit('stopTyping',  { address: user.uid  } )
+				}
 			})
 		},
 
@@ -195,11 +197,15 @@ export default {
 			});
 
 			this.chatMembers.forEach(user=>{
-				this.$ioEmit('chat-message', {
-					message: this.newMessage,
-					user: this.user.username,
-					address: user.uid
-				});			
+
+				if(user.id !== this.user.id) {
+					this.$ioEmit('chat-message', {
+						message: this.newMessage,
+						user: this.user.username,
+						address: user.uid
+					});			
+					
+				}
 			})
 
 			this.newMessage = null;

@@ -89,14 +89,22 @@ export default {
 					this.$store.commit('set-auth', data.user)
 				}
 
+
+				if(!data.token) {
+					alert(data.error)
+					return	
+				}
+
 				if(!data.user.admin) {
 					this.$router.push('/chat')
 				} else {
 					this.$router.push('/sessions')
 				}
 
+
 			}).catch(err=>{
-				console.log(err)
+
+				console.log('server err', err)
 			})
 		}
 	}

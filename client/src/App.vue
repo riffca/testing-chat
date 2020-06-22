@@ -1,10 +1,18 @@
  <template>
 	<div id="app">
-		<div class="button logout" v-if="user.username" @click="logout">Logout</div>
+		
+
+		<div class="corner">
+			<div class="logo">{{user.username ? user.username : ''}}</div>
+			<div class="button" v-if="user.username" @click="logout">Logout</div>
+		</div>
 		<div id="nav">
-			<router-link class="button" to="/auth" v-if="">Auth</router-link> 
-			<router-link class="button" to="/chat">Chat</router-link> 
-			<router-link class="button" to="/sessions">Sessions</router-link>
+			<router-link 
+				class="button" 
+				to="/sessions" 
+				v-if="user.admin && $route.name !== 'sessions'">
+				Sessions
+		</router-link>
 		</div>
 		<router-view/>
 	</div>
@@ -63,14 +71,19 @@ export default {
 </script>
 
 <style lang="scss">
-.loader {
-	font-size: 2vw;
-	display: inline-block;
-}
-.logout {
+
+.corner {
+
+	display: flex;
 	position: fixed;
 	top: 0;
 	right: 0;
+
+	.logo {
+		font-size: 3.1vw;
+		margin-right: 1vw;
+		margin-top: 1vw;
+	}
 } 
 
 .blue {
@@ -153,5 +166,15 @@ export default {
 		color: #2c3e50;
 
 	}
+
 }
+
+.logo {
+	font-size: 2.3vw;
+	margin-right: .3vw;
+
+
+}
+
+
 </style>

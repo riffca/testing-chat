@@ -33,14 +33,6 @@ store.dispatch('initAuth').then(()=>{
 		render: h => h(App)
 	}).$mount('#app')
 })
-// store.watch(
-//   () => store.state.user,
-//   (initState, nextState) => {
-//     if (initState && !nextState) {
-
-//     }
-//   },
-// );
 
 
 

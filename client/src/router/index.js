@@ -36,20 +36,32 @@ const router = new VueRouter({
 router.beforeEach(async (to,from,next)=>{
 
 	let user = store.state.user
+
 	let isAuth = user.username
-	console.log(isAuth)
+
+	if(to.name === 'home') {
+		next('/auth')
+		return
+	}
+
 	if(to.name !== 'auth') {
 		if(!isAuth) {
 			next('/auth')
 			return
-
 		}
 	}
 
-	if(to.name !== 'chat' && isAuth && !user.admin) {
-		next('/chat')
-		return
+	if(isAuth) {
 
+		if(to.name !== 'chat' && !user.admin) {
+			next('/chat')
+			return
+		}
+		if(to.name === 'chat' && user.admin && !to.query.id) {
+			next('/sessions')
+			return
+		}
+		
 	}
 
 	if(to.name === 'auth' && isAuth) {

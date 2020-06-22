@@ -63,7 +63,6 @@ const User = sequelize.define('user', {
 });
 
 
-
 // Note: using `force: true` will drop the table if it already exists
 //User.sync({ force: true }) // Now the `users` table in the database corresponds to the model definition
 
@@ -73,6 +72,7 @@ function generateToken(model) {
 		username: model.username,
 		firstName: model.firstName,
 		lastName: model.lastName,
+		admin: model.admin
 	})
 }
 

@@ -6,7 +6,19 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1.0">
 		<link rel="icon" href="<%= BASE_URL %>favicon.ico">
 		<title><%= htmlWebpackPlugin.options.title %></title>
-
+		<style>
+			
+			.loader {
+				position: fixed;
+				top:12;
+				left: 50%;
+				transform: translateX(-50%);
+				color: grey;
+				text-align: center;
+				font-size: 2vw;
+				display: inline-block;
+			}
+		</style>
 	</head>
 	<body>
 		<noscript>
