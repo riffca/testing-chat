@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -33,18 +33,40 @@ const router = new VueRouter({
 	routes
 })
 
-router.beforeEach((to,from,next)=>{
+router.beforeEach(async (to,from,next)=>{
 
+	let user = store.state.user
+	let isAuth = user.username
+	console.log(isAuth)
+	if(to.name !== 'auth') {
+		if(!isAuth) {
+			next('/auth')
+			return
 
-  if(to.name !== 'auth') {
-    if(!store.state.username) {
-      next('/auth')
-    }
-  } else {
-	  next()
-    
-  }
+		}
+	}
 
+	if(to.name !== 'chat' && isAuth && !user.admin) {
+		next('/chat')
+		return
+
+	}
+
+	if(to.name === 'auth' && isAuth) {
+
+		if(user.admin) {
+			next('/sessions')
+			return
+
+		} else {
+			next('/chat')
+			return
+			
+		}
+
+	}
+
+	next()
 
 })
 

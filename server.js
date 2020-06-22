@@ -77,14 +77,14 @@ function generateToken(model) {
 }
 
 function handleError(error, res){
-  if(error.original) {
-    res.send({ 'error': error.original.detail})
-    console.error('error !',error.original.detail)
-    
-  } else {
-    res.send({ error})
-    console.error('error !',error)
-  }
+	if(error.original) {
+		res.send({ 'error': error.original.detail})
+		console.error('error !',error.original.detail)
+		
+	} else {
+		res.send({ error})
+		console.error('error !',error)
+	}
 }
 
 
@@ -97,33 +97,33 @@ app.post('/register', async (req, res) => {
 	
 	} catch (error) {
 
-     handleError(error,res)
+		 handleError(error,res)
 	}
 })
 
 
 app.post('/login', async (req, res) => {
 
-    const { username, password } = req.body
+		const { username, password } = req.body
 
-    try {
-      const users = await User.findAll({
-        where: {
-          username,
-          password
-        }
-      })
-      if(users.length) {
-        let user = users[0]
-        let token = generateToken(user)
-        res.json({ 'user': user, token }) 
-      } else {
-        res.json({ 'error': 'login error' }) 
-      }
+		try {
+			const users = await User.findAll({
+				where: {
+					username,
+					password
+				}
+			})
+			if(users.length) {
+				let user = users[0]
+				let token = generateToken(user)
+				res.json({ 'user': user, token }) 
+			} else {
+				res.json({ 'error': 'login error' }) 
+			}
 
-    } catch (error) {
-      handleError(error,res)
-    }
+		} catch (error) {
+			handleError(error,res)
+		}
 
 })
 
@@ -132,12 +132,12 @@ app.post('/credentials', async (req, res) => {
 
 	const { token } = req.body
 
-  try {
-    let data = await tokenService.verifyToken(token)
-    res.send(data)
-  } catch(e) {
-    res.send({error: 'bad token'})
-  }
+	try {
+		let data = await tokenService.verifyToken(token)
+		res.send(data)
+	} catch(e) {
+		res.send({error: 'bad token'})
+	}
 
 
 
@@ -225,22 +225,22 @@ io.on('connection', async (socket) => {
 	});
 
 	socket.on('typing', (data) => {
-		socket.broadcast.emit('typing', (data));
+		socket.to(connectedUsers[data.address]).emit('typing', (data));
 
 	});
 
-	socket.on('stopTyping', () => {
-		socket.broadcast.emit('stopTyping');
+	socket.on('stopTyping', (data) => {
+		socket.to(connectedUsers[data.address]).emit('stopTyping');
 	});
 
-	socket.on('joined', (data) => {
+/*	socket.on('joined', (data) => {
 		socket.broadcast.emit('joined', (data));
 	});
 
 	socket.on('leave', (data) => {
 		socket.broadcast.emit('leave', (data));
 	});
-
+*/
 
 });
 

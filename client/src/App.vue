@@ -1,9 +1,10 @@
  <template>
 	<div id="app">
+		<div class="button logout" v-if="user.username" @click="logout">Logout</div>
 		<div id="nav">
-			<router-link to="/auth">Auth</router-link> |
-			<router-link to="/chat">Chat</router-link> |
-			<router-link to="/sessions">Sessions</router-link>
+			<router-link class="button" to="/auth" v-if="">Auth</router-link> 
+			<router-link class="button" to="/chat">Chat</router-link> 
+			<router-link class="button" to="/sessions">Sessions</router-link>
 		</div>
 		<router-view/>
 	</div>
@@ -11,34 +12,50 @@
 
 
 <script>
+
+import { mapState } from 'vuex'
+
 export default {
 
-	beforeCreated(){
 
-    this.$request('get','users').then(data=>{
-      data.users.forEach((user)=>{
-        user.online = data.online[user.uid]
-      });
-      this.$store.commit('set-conversations', data.users)
-      let admin = data.users.find(item=>item.admin && item.online)
-    })
 
-    this.$ioOn('connectedUsers',(data)=>{
-      let conversations = this.$store.conversations.slice()
-      conversations.forEach((user)=>{
-        user.online = data[user.uid]
-      });
-      this.$store.commit('set-conversations', conversations)
-    })
+	computed:{
+		...mapState(['user'])
+	},
 
-		let req = {
-			token: localStorage.getItem('_token')
+	created(){
+		document.querySelector('.loader').style.display = 'none'
+	},
+
+	async beforeCreate(){
+
+		//Conversations
+
+		this.$request('get','users').then(data=>{
+			data.users.forEach((user)=>{
+				user.online = data.online[user.uid]
+			});
+			this.$store.commit('set-conversations', data.users)
+		})
+
+		this.$ioOn('connectedUsers',(data)=>{
+			let conversations = this.$store.conversations.slice()
+			conversations.forEach((user)=>{
+				user.online = data[user.uid]
+			});
+			this.$store.commit('set-conversations', conversations)
+		})
+
+	},
+
+	methods: {
+		logout(){
+			localStorage.removeItem('_token')			
+			localStorage.removeItem('user')			
+			window.location.reload()
 		}
-
-    this.$request('post','credentials', { token })
-
-		// socket.emit('login',req)
 	}
+
 
 }
 	
@@ -46,6 +63,15 @@ export default {
 </script>
 
 <style lang="scss">
+.loader {
+	font-size: 2vw;
+	display: inline-block;
+}
+.logout {
+	position: fixed;
+	top: 0;
+	right: 0;
+} 
 
 .blue {
 	background: #0090fff2;
@@ -68,6 +94,8 @@ export default {
 
 
 .button {
+
+	font-weight: bold;
 	display: inline-block;
 	padding: 1.2vw;
 	margin: .2vw;
@@ -119,15 +147,11 @@ export default {
 
 	position: fixed;
 	top:0;
-	padding: 30px;
 
 	a {
-		font-weight: bold;
+		text-decoration: none;
 		color: #2c3e50;
 
-		&.router-link-exact-active {
-			color: #42b983;
-		}
 	}
 }
 </style>

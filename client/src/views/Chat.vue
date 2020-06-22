@@ -5,15 +5,17 @@
 			<div class="info">
 				<p v-for="(user, index) in info" :key="index">
 					{{user.username}} {{user.type}}
-          <span class="float-right">{{connections}} connections</span>
-        </p>
-      </div>
+					<span class="float-right">{{connections}} connections</span>
+				</p>
+			</div>
 
-      <div class="header">
-        <h4>
-          {{ chatMembers[0].username }} vs {{ chatMembers[1].username }}  
-        </h4>
-      </div>
+			<div class="header">
+				<h4>
+					<span>{{ chatMembers[0] ? chatMembers[0].username : '' }}</span> 
+						vs 
+					<span>{{ chatMembers[1] ? chatMembers[1].username : '' }}</span>  
+				</h4>
+			</div>
 
 			<h2>{{username}}</h2>
 			<div class="body">
@@ -30,7 +32,12 @@
 				<div class="footer">
 					<form @submit.prevent="send">
 						<div class="form-group">
-							<input type="text" class="form-control" v-model="newMessage"
+							<input 
+								type="text" 
+								@keydown="typeAction(true)" 
+								@keyup="typeAction(false)" 
+								class="form-control" 
+								v-model="newMessage"
 								placeholder="Enter message here">
 						</div>
 					</form>
@@ -56,16 +63,18 @@ export default {
 			info: [],
 			connections: 0,
 			chatId: '',
-      chatMembers: []
+			chatMembers: []
 		}
 	},
 
 	created() {
 
-    this.setMembers()
+		if(this.user.username) {
+			this.setMembers()
+		}
 
 		window.onbeforeunload = () => {
-			this.$ioEmit('leave', this.authUser.username);
+			this.$ioEmit('leave', this.user.username);
 		}
 		
 		this.$ioOn('chat-message', (data) => {
@@ -77,7 +86,8 @@ export default {
 		});
 
 		this.$ioOn('typing', (data) => {
-			this.typing = data;
+			let typer = this.chatMembers.find(item=>item.uid == data.address)
+			this.typing = typer.username +  ' is typing';
 		});
 
 
@@ -85,7 +95,7 @@ export default {
 			this.typing = false;
 		});
 
-		this.$ioOn('joined', (data) => {
+/*		this.$ioOn('joined', (data) => {
 			this.info.push({
 				username: data,
 				type: 'joined'
@@ -105,57 +115,77 @@ export default {
 			setTimeout(() => {
 				this.info = [];
 			}, 5000);
-		});
+		});*/
 
-		this.$ioOn('connections', (data) => {
-
-			this.connections = data;
-		});
 	},
 
 	watch: {
-		newMessage(value) {
-			value ? this.$ioEmit('typing', this.username) : this.$ioEmit('stopTyping')
+
+		user(val){
+			if(val.username) {
+				this.setMembers()
+			}
+		},
+		conversations(){
+			if(this.chatMembers.length >= 0  || this.chatMembers.length <= 1) {
+				this.setMembers()
+			}
 		}
 	},
 
 	computed:{
-    ...mapState(['conversations']),
-		authUser(){
-			return this.$store.state.user
-		}
+
+		...mapState(['conversations', 'user']),
+		getAddresses(){
+			return this.chatMembers.filter(item=>this.user.id!=item.id)
+		},
+
 	},
 
 	methods: {
 
-    setMembers(){
+		typeAction(value){
+			this.getAddresses.forEach(user=>{
 
-      this.chatMembers.push(this.authUser)
+				value ? this.$ioEmit('typing', { address: user.uid  } ) 
+					: this.$ioEmit('stopTyping',  { address: user.uid  } )
+				
+			})
+		},
 
-      this.chatId = this.$route.query.id 
-      let opponent
 
-      if(!this.chatId) {
 
-        opponent = this.conversations.find(item=>{
-          return item.admin && item.online
-        })
+		setMembers(){
+			this.chatMembers  = []
 
-        if(!opponent) {
-          opponent = this.conversations.find(item=>{
-            return item.admin
-          })
-        }
+			this.chatMembers.push(this.user)
 
-      } else {
-        opponent = this.conversations.filter(item=>{
-          return item.id = this.chatId
-        })
+			this.chatId = this.$route.query.id 
+			let opponent
 
-      }
+			if(!this.chatId) {
 
-      this.chatMembers.push(opponent)
-    },
+				opponent = this.conversations.find(item=>{
+					return item.admin && item.online
+				})
+
+				if(!opponent) {
+					opponent = this.conversations.find(item=>{
+						return item.admin
+					})
+				}
+
+			} else {
+				opponent = this.conversations.find(item=>{
+
+					return item.id == this.chatId
+				})
+
+			}
+
+			console.log(opponent)
+			this.chatMembers.push(opponent)
+		},
 		send() {
 
 			this.messages.push({
@@ -164,11 +194,14 @@ export default {
 				user: 'Me',
 			});
 
-			this.$ioEmit('chat-message', {
-				message: this.newMessage,
-				user: this.authUser.username,
-				address: this.$route.query.id
-			});
+			this.chatMembers.forEach(user=>{
+				this.$ioEmit('chat-message', {
+					message: this.newMessage,
+					user: this.user.username,
+					address: user.uid
+				});			
+			})
+
 			this.newMessage = null;
 		},
 
@@ -187,32 +220,32 @@ export default {
 
 .chat { 
 
-  height: 100vh;
-  width: 100vm;
+	height: 100vh;
+	width: 100vm;
 
 
-  .info {
+	.info {
 
 
-  }
+	}
 
-  .header {
-
-
-  }
-
-  .body {
+	.header {
 
 
-  }
+	}
 
-  .footer {
+	.body {
 
 
-  }
+	}
+
+	.footer {
+
+
+	}
 
 }
-  
+	
 
 
 </style>

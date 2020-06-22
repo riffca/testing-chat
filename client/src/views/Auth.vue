@@ -32,7 +32,6 @@
 				<input id='lastName' type="checkbox" v-model="isAdmin">			
 			</div>
 
-
 			<div class="button blue" @click="authAction">Отправить</div>
 
 		</div>
@@ -60,30 +59,27 @@ export default {
 		}
 	},
 
-	mounted(){
 
-
-	},
 
 	methods: {
 
 		authAction(){
 
 			let req = {
-        username: this.username,
+				username: this.username,
 				password: this.password
-      }
-
-      if(this.isSignup) {
-        req = {
-          ...req, 
-  				lastName: this.lastName,
-  				firstName: this.firstName,
-  				admin: this.isAdmin
-        }
 			}
 
-      let action = this.isSignup ? 'register' : 'login'
+			if(this.isSignup) {
+				req = {
+					...req, 
+					lastName: this.lastName,
+					firstName: this.firstName,
+					admin: this.isAdmin
+				}
+			}
+
+			let action = this.isSignup ? 'register' : 'login'
 
 			this.$request('post', action, req).then(data=>{
 
@@ -93,11 +89,11 @@ export default {
 					this.$store.commit('set-auth', data.user)
 				}
 
-        if(!data.user.admin) {
-          this.$router.push('/chat')
-        } else {
-          this.$router.push('/sessions')
-        }
+				if(!data.user.admin) {
+					this.$router.push('/chat')
+				} else {
+					this.$router.push('/sessions')
+				}
 
 			}).catch(err=>{
 				console.log(err)

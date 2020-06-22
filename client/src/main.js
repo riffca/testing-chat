@@ -4,17 +4,13 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import io from 'socket.io-client';
-import axios from 'axios'
-import { request, isDevelopment, setUrl } from './common   '
+import { request, isDevelopment } from './common'
 Vue.config.productionTip = false
-
-
 
 let getSocket = function() {
 	let token = '?token='+localStorage.getItem('_token')
 	return io(isDevelopment ? 'http://localhost:3000' + token : '' + token)
 }
-
 
 let socket = getSocket()
 
@@ -30,20 +26,24 @@ Vue.prototype.isDevelopment = isDevelopment
 
 Vue.prototype.$request = request
 
-store.dispatch('initAuth')
+store.dispatch('initAuth').then(()=>{
+	new Vue({
+		router,
+		store,
+		render: h => h(App)
+	}).$mount('#app')
+})
+// store.watch(
+//   () => store.state.user,
+//   (initState, nextState) => {
+//     if (initState && !nextState) {
 
-store.watch(
-  () => store.state.user,
-  (initState, nextState) => {
-    if (initState && !nextState) {
-      new Vue({
-        router,
-        store,
-        render: h => h(App)
-      }).$mount('#app')
-    }
-  },
-);
+//     }
+//   },
+// );
+
+
+
 
 
 
