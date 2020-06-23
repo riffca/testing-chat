@@ -107,11 +107,8 @@ export default {
 		});		
 
 		this.$ioOn('joinConversation', (data) => {
-
-			console.log(data)
-			let noAdmins= this.chatMembers.filter(item=>!item.admin)
 			let member = this.conversations.find(item=>item.uid===data.from)
-			noAdmins.push(member)
+			this.chatMembers.push(member)
 		});
 
 	},
