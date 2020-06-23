@@ -32,7 +32,7 @@
 				<input id='lastName' type="checkbox" v-model="isAdmin">			
 			</div>
 
-			<div class="button blue" @click="authAction">Отправить</div>
+			<div class="send-button button blue" @click="authAction">Отправить</div>
 
 		</div>
 
@@ -89,7 +89,6 @@ export default {
 					this.$store.commit('set-auth', data.user)
 				}
 
-
 				if(!data.token) {
 					alert(data.error)
 					return	
@@ -101,9 +100,7 @@ export default {
 					this.$router.push('/sessions')
 				}
 
-
 			}).catch(err=>{
-
 				console.log('server err', err)
 			})
 		}
@@ -115,6 +112,10 @@ export default {
 .auth {
 	display: flex;
 	justify-content: center;
+
+	.send-button {
+		margin-top: 2vw;
+	}
 }
 
 
@@ -124,14 +125,14 @@ export default {
 }
 
 .buttons {
+	margin-bottom: 2vw;
 	display: block;
 
 }
 	
-
 .auth-wrap {
 
-	margin-top: 10vw;
+	margin-top: 5vw;
 	max-width: 50vw;
 
 	label {

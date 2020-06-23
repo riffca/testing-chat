@@ -47,7 +47,8 @@ export default {
 		})
 
 		this.$ioOn('connectedUsers',(data)=>{
-			let conversations = this.$store.conversations.slice()
+
+			let conversations = this.$store.state.conversations.slice()
 			conversations.forEach((user)=>{
 				user.online = data[user.uid]
 			});
@@ -71,6 +72,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+* {
+	margin: 0;
+	padding: 0;
+}
 
 .corner {
 
@@ -134,7 +140,7 @@ export default {
 }
 
 .title {
-	font-size: 4vw;
+	font-size: 2.4vw;
 	padding: 1vw;
 }
 
@@ -143,16 +149,21 @@ export default {
 	justify-content: center;
 	
 
-	input {
-		padding: .8vw;
+	input  {
+		display: inline-block;
+		padding: 1.28vw 2.24vw;
+		margin: 0.2vw;
 		width: 10vw;
-		font-size: 1.4vw;
+		font-size: 1.3vw;
 	}
 
 	label {
 		padding: 0.8vw;
 		font-size: 1.3vw;
 	}
+
+
+
 
 }
 

@@ -5,6 +5,21 @@ import router from './router'
 import store from './store'
 import io from 'socket.io-client';
 import { request, isDevelopment } from './common'
+
+import firebase from 'firebase';
+import 'firebase/firestore';
+
+var config = {
+	apiKey: "AIzaSyBaccQKkNcjZRoC2GsqbFDfuAMJ1IgAd9Q",
+	authDomain: "test-5d51c.firebaseapp.com",
+	projectId: 'test-5d51c',
+	databaseURL: "https://test-5d51c.firebaseio.com",
+	storageBucket: "ttest-5d51c.appspot.com"
+};
+
+firebase.initializeApp(config)
+
+
 Vue.config.productionTip = false
 
 let getSocket = function() {
@@ -21,6 +36,9 @@ Vue.prototype.$ioEmit = function(name,data) {
 Vue.prototype.$ioOn = function(name,fn) {
 	socket.on(name,fn)
 }
+
+Vue.prototype.$db = firebase.firestore();
+
 
 Vue.prototype.isDevelopment = isDevelopment
 

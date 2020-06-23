@@ -14,19 +14,12 @@ export default new Vuex.Store({
 		conversations: [],
 	},
 	mutations: {
-
 		'set-auth'(state, val){
 			state.user = val
 		},
-		'set-customer'(state,val) {
-			state.cutomer = val
-		},   
 		'set-conversations'(state,val) {
 			state.conversations = val
 		},  
-		'set-admin'(state,val) {
-			state.admin = val
-		}
 	},
 	actions: {
 		initAuth({commit}){
