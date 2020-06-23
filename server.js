@@ -10,8 +10,9 @@ const path = require('path')
 let tokenService = require('./token')
 
 let clientPath = (location)=>{
-	return path.resolve(__dirname/*, 'client', 'dist'*/)
+	return path.resolve(__dirname, 'client', 'dist')
 }
+
 app.use(express.static(clientPath()));
 app.use(cors())
 app.use(express.json());
@@ -182,8 +183,7 @@ io.use(async (socket, next) => {
 io.on('connection', async (socket) => {
 
 	if(socket.credentials) {
-		console.log('emitCred')
-		socket.broadcast.emit('cennectedUsers', connectedUsers)
+		socket.broadcast.emit('connectedUsers', connectedUsers)
 	}
 
 	console.log('new connection')
@@ -205,7 +205,7 @@ io.on('connection', async (socket) => {
 			connectedUsers[id] = ''
 		}
 
-		socket.broadcast.emit('cennectedUsers', connectedUsers)
+		socket.broadcast.emit('connectedUsers', connectedUsers)
 
 	});
 
@@ -219,7 +219,6 @@ io.on('connection', async (socket) => {
 	})
 
 	socket.on('chat-message', (data) => {
-		//socket.broadcast.emit('chat-message', (data));
 		socket.to(connectedUsers[data.address]).emit('chat-message', (data));
 
 	});
@@ -233,14 +232,6 @@ io.on('connection', async (socket) => {
 		socket.to(connectedUsers[data.address]).emit('stopTyping');
 	});
 
-/*	socket.on('joined', (data) => {
-		socket.broadcast.emit('joined', (data));
-	});
-
-	socket.on('leave', (data) => {
-		socket.broadcast.emit('leave', (data));
-	});
-*/
 
 });
 
