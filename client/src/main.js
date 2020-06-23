@@ -38,6 +38,7 @@ Vue.prototype.$ioOn = function(name,fn) {
 }
 
 Vue.prototype.$db = firebase.firestore();
+Vue.prototype.$firestore = firebase.firestore;
 
 
 Vue.prototype.isDevelopment = isDevelopment

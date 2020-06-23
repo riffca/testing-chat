@@ -79,7 +79,6 @@ export default {
 		
 		this.$ioOn('chat-message', (data) => {
 
-
 			let current = this.chatMembers.find(item=>item.uid==data.from)
 
 			if(current) {
@@ -90,8 +89,9 @@ export default {
 				});
 			}
 			this.$nextTick(()=>{
-				document.querySelector('.body').scrollIntoView()
+				this.scrollWindow()
 			})
+
 		});
 
 		this.$ioOn('typing', (data) => {
@@ -119,6 +119,7 @@ export default {
 				this.setMembers()
 			}
 		},
+
 		chatMembers(){
 
 				if(this.chatMembers <= 1) return 
@@ -143,7 +144,12 @@ export default {
 
 
 						})
+						messages.sort((a,b)=>{
+							return a.createdAt - b.createdAt
+						})
+
 						that.messages = messages
+
 						that.$nextTick(()=>{
 							that.scrollWindow()
 						})
@@ -208,22 +214,22 @@ export default {
 		async send() {
 
 			this.current = ''
-
-			this.messages.push({
-				message: this.newMessage,
-				type: 0,
-				user: this.user.username,
-			});
-
-			this.$nextTick(()=>{
-				this.scrollWindow()
-			})
 				
 
 			let message = {
 				message: this.newMessage,
 				user: this.user.username,
+				createdAt: Date.now()
 			}
+
+			this.messages.push({
+				...message,
+				type: 0
+			});
+
+			this.$nextTick(()=>{
+				this.scrollWindow()
+			})
 
 			message.members = {}
 
