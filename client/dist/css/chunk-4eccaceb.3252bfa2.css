@@ -1,0 +1,1 @@
+.conversations{display:flex;flex-direction:column}.conversations .session{cursor:pointer;padding:2vw 1.3vw;margin:.23vw}.conversations .session:hover{background:grey;color:#fff}.conversations .session{border-radius:.3vw;font-size:2.5wv}.conversations .session.active{background:#6ea76e;color:#fff}.conversations .session.active:hover{background:grey;color:#fff}
