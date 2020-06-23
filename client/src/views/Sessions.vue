@@ -41,7 +41,8 @@ export default {
 
 			this.filter(item=>{
 				let name = item.username + item.firstName + item.lastName
-				return name.includes(val)
+				let reg = new RegExp(val, 'i')
+				return name.match(reg)
 
 			})
 
