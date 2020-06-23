@@ -8,16 +8,21 @@ const cors = require('cors')
 const path = require('path')
 const serveStatic = require("serve-static");
 let tokenService = require('./token')
+const methodOverride = require('method-override')
+
+
+
+app.set('port', process.env.PORT || 3000);
 
 let clientPath = (location)=>{
 	return path.resolve(__dirname, 'client', 'dist')
 }
-app.set('port', process.env.PORT || 3000);
+app.use(require('connect-history-api-fallback')()) 
 app.use(serveStatic(clientPath()));
+app.use(methodOverride('_method'));
 app.use(cors())
 app.use(express.json());
 
-app.use(require('connect-history-api-fallback')()) 
 
 const sequelize = new Sequelize('postgres://gxyfblsv:ZSoIrttKdzkmQbpAfUGEjOGOmIryw67G@kandula.db.elephantsql.com:5432/gxyfblsv')
 
