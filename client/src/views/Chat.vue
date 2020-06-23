@@ -106,28 +106,6 @@ export default {
 			this.typing = false;
 		});
 
-/*		this.$ioOn('joined', (data) => {
-			this.info.push({
-				username: data,
-				type: 'joined'
-			});
-
-			setTimeout(() => {
-				this.info = [];
-			}, 5000);
-		});
-
-		this.$ioOn('leave', (data) => {
-			this.info.push({
-				username: data,
-				type: 'left'
-			});
-
-			setTimeout(() => {
-				this.info = [];
-			}, 5000);
-		});*/
-
 	},
 
 	watch: {
@@ -276,9 +254,7 @@ export default {
 			var scrollingElement = (document.scrollingElement || document.body);
 			scrollingElement.scrollTop = scrollingElement.scrollHeight;
 		},
-		addUser() {
-			this.$ioEmit('joined', this.username)
-		}
+
 	},
 
 }
