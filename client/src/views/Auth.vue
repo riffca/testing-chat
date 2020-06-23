@@ -94,11 +94,13 @@ export default {
 					return	
 				}
 
-				if(!data.user.admin) {
+/*				if(!data.user.admin) {
 					this.$router.push('/chat')
 				} else {
 					this.$router.push('/sessions')
 				}
+*/
+			window.location.reload()
 
 			}).catch(err=>{
 				console.log('server err', err)

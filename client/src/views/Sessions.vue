@@ -84,9 +84,9 @@ export default {
 		filter(cb){
 			this.filteredConversations = this.conversations.filter(cb).filter(item=>item.uid !== this.user.uid)
 		},
-		openConversation(user){
+		openConversation(user) {
 			this.$router.push({name: 'chat', query: { id: user.id }})
-			this.$store.commit('set-customer', user)
+			this.$ioEmit('joinConversation',{address: user.uid, from: this.user.uid})
 		}
 	}
 }

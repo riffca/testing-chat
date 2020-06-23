@@ -48,6 +48,8 @@ export default {
 
 		this.$ioOn('connectedUsers',(data)=>{
 
+			console.log(data)
+
 			let conversations = this.$store.state.conversations.slice()
 			conversations.forEach((user)=>{
 				user.online = data[user.uid]

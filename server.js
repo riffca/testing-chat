@@ -6,7 +6,7 @@ const express = require('express')
 const Sequelize = require('sequelize')
 const cors = require('cors')
 const path = require('path')
-
+const methodOverride = require('method-override')
 let tokenService = require('./token')
 
 let clientPath = (location)=>{
@@ -16,8 +16,9 @@ app.set('port', process.env.PORT || 3000);
 app.use(express.static(clientPath()));
 app.use(cors())
 app.use(express.json());
-app.use(require('connect-history-api-fallback')()) 
 
+app.use(methodOverride('_method'));
+app.use(require('connect-history-api-fallback')()) 
 
 const sequelize = new Sequelize('postgres://gxyfblsv:ZSoIrttKdzkmQbpAfUGEjOGOmIryw67G@kandula.db.elephantsql.com:5432/gxyfblsv')
 
@@ -209,15 +210,6 @@ io.on('connection', async (socket) => {
 
 	});
 
-	socket.on('get-users', async (data) => {
-		try {
-			const data = await User.findAll()
-			socket.to(connectedUsers[data.userId]).emit('users',{ users: data, online: connectedUsers })
-		} catch (error) {
-			console.error(error)
-		}
-	})
-
 	socket.on('chat-message', (data) => {
 		socket.to(connectedUsers[data.address]).emit('chat-message', (data));
 
@@ -230,6 +222,11 @@ io.on('connection', async (socket) => {
 
 	socket.on('stopTyping', (data) => {
 		socket.to(connectedUsers[data.address]).emit('stopTyping');
+	});	
+
+
+	socket.on('joinConversation', (data) => {
+		socket.to(connectedUsers[data.address]).emit('joinConversation', data);
 	});
 
 

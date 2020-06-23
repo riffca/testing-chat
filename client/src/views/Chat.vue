@@ -104,6 +104,14 @@ export default {
 
 		this.$ioOn('stopTyping', () => {
 			this.typing = false;
+		});		
+
+		this.$ioOn('joinConversation', (data) => {
+
+			console.log(data)
+			let noAdmins= this.chatMembers.filter(item=>!item.admin)
+			let member = this.conversations.find(item=>item.uid===data.from)
+			noAdmins.push(member)
 		});
 
 	},
