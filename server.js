@@ -12,7 +12,7 @@ let tokenService = require('./token')
 let clientPath = (location)=>{
 	return path.resolve(__dirname, 'client', 'dist')
 }
-
+app.set('port', process.env.PORT || 3000);
 app.use(express.static(clientPath()));
 app.use(cors())
 app.use(express.json());
@@ -156,7 +156,7 @@ app.get('/users', async (req, res) => {
 
 
 
-http.listen(3000, () => {
+http.listen(app.get('port'), () => {
 	console.log('Listening on port *: 3000');
 });
 
