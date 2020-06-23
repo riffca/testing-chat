@@ -219,6 +219,10 @@ io.on('connection', async (socket) => {
 
 	});
 
+	socket.on('get-users', () => {
+		socket.broadcast.emit('get-users');
+	});
+
 	socket.on('typing', (data) => {
 		socket.to(connectedUsers[data.address]).emit('typing', (data));
 

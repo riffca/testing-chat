@@ -31,24 +31,22 @@ export default {
 		...mapState(['user'])
 	},
 
-	created(){
-		document.querySelector('.loader').style.display = 'none'
-	},
 
-	async beforeCreate(){
+
+	async created(){
+
+		
+		document.querySelector('.loader').style.display = 'none'
 
 		//Conversations
 
-		this.$request('get','users').then(data=>{
-			data.users.forEach((user)=>{
-				user.online = data.online[user.uid]
-			});
-			this.$store.commit('set-conversations', data.users)
+		this.getUsers()
+
+		this.$ioOn('get-users',()=>{
+			this.getUsers()
 		})
 
 		this.$ioOn('connectedUsers',(data)=>{
-
-			console.log(data)
 
 			let conversations = this.$store.state.conversations.slice()
 			conversations.forEach((user)=>{
@@ -57,9 +55,19 @@ export default {
 			this.$store.commit('set-conversations', conversations)
 		})
 
+
+
 	},
 
 	methods: {
+		getUsers(){
+			this.$request('get','users').then(data=>{
+				data.users.forEach((user)=>{
+					user.online = data.online[user.uid]
+				});
+				this.$store.commit('set-conversations', data.users)
+			})
+		},
 		logout(){
 			localStorage.removeItem('_token')			
 			localStorage.removeItem('user')			

@@ -39,7 +39,7 @@
 				</div>
 			</form>
 
-			<small v-if="typing" class="text-white">{{typing}} is typing</small>
+			<small v-if="typing" class="text-white">{{typing}}</small>
 
 		</div>
 
@@ -304,6 +304,12 @@ export default {
 		transform: translateX(-50%);
 		form, small  {
 			display: block;
+		}
+
+		small {
+			position: absolute;
+			right: 0;
+			top: -2vw;
 		}
 	}
 
