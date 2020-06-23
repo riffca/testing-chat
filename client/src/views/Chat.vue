@@ -107,8 +107,12 @@ export default {
 		});		
 
 		this.$ioOn('joinConversation', (data) => {
-			let member = this.conversations.find(item=>item.uid===data.from)
-			this.chatMembers.push(member)
+
+			let exists  = this.chatMembers.find(item=>item.uid===data.from) 
+			if(!exists) {
+				let member = this.conversations.find(item=>item.uid===data.from)
+				this.chatMembers.push(member)
+			}
 		});
 
 	},
