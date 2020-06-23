@@ -6,18 +6,17 @@ const express = require('express')
 const Sequelize = require('sequelize')
 const cors = require('cors')
 const path = require('path')
-const methodOverride = require('method-override')
+const serveStatic = require("serve-static");
 let tokenService = require('./token')
 
 let clientPath = (location)=>{
 	return path.resolve(__dirname, 'client', 'dist')
 }
 app.set('port', process.env.PORT || 3000);
-app.use(express.static(clientPath()));
+app.use(serveStatic(clientPath()));
 app.use(cors())
 app.use(express.json());
 
-app.use(methodOverride('_method'));
 app.use(require('connect-history-api-fallback')()) 
 
 const sequelize = new Sequelize('postgres://gxyfblsv:ZSoIrttKdzkmQbpAfUGEjOGOmIryw67G@kandula.db.elephantsql.com:5432/gxyfblsv')
